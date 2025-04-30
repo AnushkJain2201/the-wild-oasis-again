@@ -1,53 +1,35 @@
-import styled from "styled-components";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+
+import Dashboard from "../pages/Dashboard";
+import Cabins from "../pages/Cabins";
+import Users from "../pages/Users";
+import Sttings from "../pages/Settings";
+import Account from "../pages/Account";
+import Login from "../pages/Login";
+import PageNotFound from "../pages/PageNotFound";
 import GlobalStyles from "../styles/GlobalStyles";
 
-import Button from "../ui/Button";
-import Input from "../ui/Input";
-import Heading from "../ui/Heading";
-import Row from "../ui/Row";
-
-const StyledApp = styled.div`
-	padding: 20px;
-`;
-
-function App() {
+const App = () => {
 	return (
 		<>
 			<GlobalStyles />
-			<StyledApp>
-				<Row>
-					<Row type='horizontal'>
-						<Heading as='h1'>The Wild Oasis</Heading>
-
-						<div>
-							<Heading as='h2'>Check In / Check Out</Heading>
-							<Button onClick={() => alert("Hiiiiiiiiii")}>
-								Check In
-							</Button>
-							<Button variation='secondary' size='medium' onClick={() => alert("Byeeeeeeeee")}>
-								Check Out
-							</Button>
-						</div>
-					</Row>
-
-					<Row>
-						<Heading as='h3'>Forms</Heading>
-
-						<form>
-							<Input
-								type='number'
-								placeholder='Number of guests'
-							/>
-							<Input
-								type='number'
-								placeholder='Number of guests'
-							/>
-						</form>
-					</Row>
-				</Row>
-			</StyledApp>
+			<BrowserRouter>
+				<Routes>
+					<Route
+						index
+						element={<Navigate replace to='dashboard' />}
+					/>
+					<Route path='dashboard' element={<Dashboard />} />
+					<Route path='bookings' element={<Cabins />} />
+					<Route path='users' element={<Users />} />
+					<Route path='settings' element={<Sttings />} />
+					<Route path='account' element={<Account />} />
+					<Route path='login' element={<Login />} />
+					<Route path='*' element={<PageNotFound />} />
+				</Routes>
+			</BrowserRouter>
 		</>
 	);
-}
+};
 
 export default App;
