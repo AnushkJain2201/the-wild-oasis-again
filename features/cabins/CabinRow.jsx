@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
 import { deleteCabin } from "../../services/apiCabins";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 const TableRow = styled.div`
   display: grid;
@@ -53,13 +54,13 @@ const CabinRow = ({cabin}) => {
     mutationFn: (id) => deleteCabin(id),
     onSuccess: () => {
       // we want to invalidate the cache data and then it will refetch the data from the server
-      alert("Cabin deleted successfully");
+      toast.success("Cabin deleted successfully");
       queryCliet.invalidateQueries({
         queryKey: ["cabin"],
       });
     },
     onError: (err) => {
-      console.log(err);
+      toast.error(err.message);
     },
   });
 
