@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 import styled from "styled-components";
 import { formatCurrency } from "../../utils/helpers";
-import { deleteCabin } from "../../services/apiCabins";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
+import { useDeleteCabin } from "./useDeleteCabin";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+// import { useCreateCabin } from "./useCreateCabin";
 
 const TableRow = styled.div`
 	display: grid;
@@ -48,6 +48,7 @@ const Discount = styled.div`
 
 const CabinRow = ({ cabin }) => {
 	const [showForm, setShowForm] = useState(false);
+	const { isDeleting, deleteCabin } = useDeleteCabin();
 
 	const {
 		id: cabinId,
@@ -58,47 +59,44 @@ const CabinRow = ({ cabin }) => {
 		image,
 	} = cabin;
 
-	// we want to invalidate the cache data and then it will refetch the data from the server, for calling the invalidate we need to use QueryClient
-	const queryCliet = useQueryClient();
+	// const {isCreating, createCabin} = useCreateCabin();
 
-	const { isLoading: isDeleting, mutate } = useMutation({
-		mutationFn: (id) => deleteCabin(id),
-		onSuccess: () => {
-			// we want to invalidate the cache data and then it will refetch the data from the server
-			toast.success("Cabin deleted successfully");
-			queryCliet.invalidateQueries({
-				queryKey: ["cabin"],
-			});
-		},
-		onError: (err) => {
-			toast.error(err.message);
-		},
-	});
+	const handleDuplicate = () => {
+		createCabin({...cabin, name: `${name} (copy)`});
+	};
 
 	return (
-    <>
-    
-		<TableRow>
-			<Img src={image} alt={name} />
-			<Cabin>{name}</Cabin>
-			<div>Fits up to {maxCapacity} guests</div>
-			<Price>{formatCurrency(regularPrice)}</Price>
-			{discount ? <Discount>{formatCurrency(discount)}</Discount> : <span>&mdash;</span>}
-			<div>
-				<button
-					onClick={() => setShowForm((state) => !state)}
-					disabled={isDeleting}
-				>
-					Edit
-				</button>
-				<button onClick={() => mutate(cabinId)} disabled={isDeleting}>
-					Delete
-				</button>
-			</div>
-		</TableRow>
-    {showForm && <CreateCabinForm cabinToEdit={cabin} />}
-    </>
-    
+		<>
+			<TableRow>
+				<Img src={image} alt={name} />
+				<Cabin>{name}</Cabin>
+				<div>Fits up to {maxCapacity} guests</div>
+				<Price>{formatCurrency(regularPrice)}</Price>
+				{discount ? (
+					<Discount>{formatCurrency(discount)}</Discount>
+				) : (
+					<span>&mdash;</span>
+				)}
+				<div>
+					{/* <button onClick={handleDuplicate}>
+						<HiSquare2Stack />
+					</button> */}
+					<button
+						onClick={() => setShowForm((state) => !state)}
+						disabled={isDeleting}
+					>
+						<HiPencil />
+					</button>
+					<button
+						onClick={() => deleteCabin(cabinId)}
+						disabled={isDeleting}
+					>
+						<HiTrash />
+					</button>
+				</div>
+			</TableRow>
+			{showForm && <CreateCabinForm cabinToEdit={cabin} />}
+		</>
 	);
 };
 
